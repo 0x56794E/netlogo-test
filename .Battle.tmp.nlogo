@@ -11,10 +11,8 @@ end
 
 to go
   move-turtles
-  eat-grass
-  reproduce
+  fight
   check-death
-  regrow-grass
   tick
 end
 
@@ -40,44 +38,30 @@ to move-turtles
   ]
 end
 
-to eat-grass
+to fight
+  ;; If 2 agents are in ea other's vincinity
   ask turtles [
-    if pcolor = green [
-      set pcolor black
-      set energy energy + 10
-    ]
-    ifelse show-energy?
-    [ set label xcor ]
-    [ set label "" ]
+
   ]
 end
 
-to reproduce
-  ask turtles [
-    if energy > 50 [
-      set energy energy - 50
-      hatch 1 [ set energy 50 ]
-    ]
-  ]
-end
+;;idea
+;; if two turltes enter ea other's vicinity (say within 2 unit radius)
+;; then fight occur => randomly determine who will win the fight
+;; QUESTION: how to determine if any agent is at any coordinates???
+;; Does patch have this data?
 
 to check-death
   ask turtles [
     if energy <= 0 [ die ]
   ]
 end
-
-to regrow-grass
-  ask patches [
-    if random 100 < 3 [ set pcolor green]
-  ]
-end
 @#$#@#$#@
 GRAPHICS-WINDOW
-201
-48
-638
-486
+210
+10
+647
+448
 -1
 -1
 13.0
@@ -101,10 +85,10 @@ ticks
 30.0
 
 BUTTON
-12
-120
-82
-153
+41
+39
+111
+72
 Set up
 setup
 NIL
@@ -118,13 +102,13 @@ NIL
 1
 
 BUTTON
-92
-119
-155
-152
+127
+37
+190
+70
 Go
 go
-T
+NIL
 1
 T
 OBSERVER
@@ -133,17 +117,6 @@ NIL
 NIL
 NIL
 1
-
-SWITCH
-14
-66
-158
-99
-show-energy?
-show-energy?
-0
-1
--1000
 
 @#$#@#$#@
 ## WHAT IS IT?
