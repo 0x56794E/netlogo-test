@@ -1,25 +1,21 @@
+;; Turtles vars
+turtles-own [energy]
+
 ;; Set up proc
-;; Create 10 agents - turtles
 to setup
   clear-all
-  ;; Create 2 agents - one sq and 1 round
-  create-turtles 1
-  [
-    set shape "square"
-    set size 2
-    set xcor 5
-    set color red
-  ]
-
-  create-turtles 1
-  [
-    set shape "circle"
-    set size 3
-    set xcor 10
-    set color green
-  ]
-
+  setup-patches
+  setup-turtles
   reset-ticks
+end
+
+to setup-patches
+  ask patches [ set pcolor green ]
+end
+
+to setup-turtles
+  create-turtles 100
+  ask turtles [setxy random-xcor random-ycor]
 end
 
 ;; Go proc
@@ -28,12 +24,26 @@ end
 ;; Randomly turn right
 ;; Randomly turn left
 to go
-  ask turtles [
-    fd 1
-    rt random 10
-    lt random 10
-  ]
+  move-turtles
+  eat-grass
   tick
+end
+
+to move-turtles
+  ask turtles [
+    right random 360
+    forward 1
+    set energy energy - 1
+  ]
+end
+
+to eat-grass
+  ask turtles [
+    if pcolor = green [
+      set pcolor black
+      set energy energy + 10
+    ]
+  ]
 end
 
 
