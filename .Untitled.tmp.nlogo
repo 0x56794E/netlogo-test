@@ -31,13 +31,24 @@ end
 
 to move-turtles
   ask turtles [
+
     right random 360
     forward 1
     set energy energy - 1
   ]
 end
 
-t
+to eat-grass
+  ask turtles [
+    if pcolor = green [
+      set pcolor black
+      set energy energy + 10
+    ]
+    ifelse show-energy?
+    [ set label energy ]
+    [ set label "" ]
+  ]
+end
 
 
 @#$#@#$#@
@@ -105,10 +116,10 @@ NIL
 SWITCH
 62
 113
-165
+206
 146
-grass?
-grass?
+show-energy?
+show-energy?
 0
 1
 -1000
