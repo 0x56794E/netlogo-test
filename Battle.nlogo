@@ -48,17 +48,21 @@ to fight
   [
     find-flockmates
     if any? flockmates
-    [find-nearest-neighbor
-      if distance nearest-neighbor < minimum-separation   ;;if w/i vicinity => rand choose who's dead
+    [find-nearest-alive-neighbor
+      if nearest-neighbor != nobody
+      [
+        if distance nearest-neighbor < minimum-separation   ;;if w/i vicinity => rand choose who's dead
         [
           let alive_rand random 1
+          set label alive_rand
           set alive alive_rand
           ask nearest-neighbor [set alive 1 - alive_rand]
         ]
-
+      ]
     ]
 
-    fd 1
+    fd random 5
+    rt random 5
   ]
 end
 
@@ -68,6 +72,11 @@ end
 
 to find-nearest-neighbor ;; turtle procedure
   set nearest-neighbor min-one-of flockmates [distance myself]
+end
+
+to find-nearest-alive-neighbor
+  set nearest-neighbor min-one-of flockmates with [ alive = 1 ] [distance myself]
+
 end
 
 ;;; SEPARATE
