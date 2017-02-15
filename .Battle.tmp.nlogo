@@ -1,20 +1,26 @@
 turtles-own [
   flockmates         ;; agentset of nearby turtles
   nearest-neighbor   ;; closest one of our flockmates
+
+  alive              ;; 0 if dead; otherwise alive
 ]
 
 to setup
   clear-all
   create-turtles population
-    [ set color yellow - 2 + random 7  ;; random shades look nice
+    [ set color yellow ;; random shades look nice
       set size 1.5  ;; easier to see
       setxy random-xcor random-ycor
-      set flockmates no-turtles ]
+      set flockmates no-turtles
+      set alive 1
+    ]
+
   reset-ticks
 end
 
 to go
-  ask turtles [ flock ]
+  ;; Check color first
+  ask turtles [ fight ] ;; can change flock or fight
   ;; the following line is used to make the turtles
   ;; animate more smoothly.
   repeat 5 [ ask turtles [ fd 0.2 ] display ]
@@ -24,6 +30,8 @@ to go
   tick
 end
 
+;; Moving around
+;; Can impl the fighting here
 to flock  ;; turtle procedure
   find-flockmates
   if any? flockmates
@@ -32,6 +40,25 @@ to flock  ;; turtle procedure
         [ separate ]
         [ align
           cohere ] ]
+end
+
+to fight
+  ifelse alive < 1 ;; if dead
+  [ set color red ]
+  [
+    find-flockmates
+    if any? flockmates
+    [find-nearest-neighbor
+      if distance nearest-neighbor < minimum-separation   ;;if w/i vicinity => rand choose who's dead
+        [
+          let alive_rand random 1
+          set alive alive_rand
+          ask nearest-neighbor [set alive 1 - alive_rand]
+        ]
+
+    ]
+
+  ]
 end
 
 to find-flockmates  ;; turtle procedure
@@ -66,7 +93,7 @@ to-report average-flockmate-heading  ;; turtle procedure
 end
 
 ;;; COHERE
-
+;;; Merge the two turtles into one turtle
 to cohere  ;; turtle procedure
   turn-towards average-heading-towards-flockmates max-cohere-turn
 end
@@ -191,7 +218,7 @@ vision
 vision
 1
 10
-5.0
+3.0
 1
 1
 patches
@@ -240,6 +267,21 @@ max-separate-turn
 1
 1
 degress
+HORIZONTAL
+
+SLIDER
+289
+498
+524
+531
+minimum-separation
+minimum-separation
+1
+5
+1.0
+1
+1
+patches
 HORIZONTAL
 
 @#$#@#$#@
