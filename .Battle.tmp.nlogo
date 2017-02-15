@@ -49,7 +49,7 @@ to fight
     find-flockmates
     if any? flockmates
     [find-nearest-alive-neighbor
-      if nearest-neighbor not  nobody
+      if nearest-neighbor != nobody
       [
         if distance nearest-neighbor < minimum-separation   ;;if w/i vicinity => rand choose who's dead
         [
@@ -144,9 +144,9 @@ end
 ; See Info tab for full copyright and license.
 @#$#@#$#@
 GRAPHICS-WINDOW
-210
+898
 10
-647
+1335
 448
 -1
 -1
@@ -280,10 +280,10 @@ degress
 HORIZONTAL
 
 SLIDER
-289
-498
-524
-531
+26
+459
+261
+492
 minimum-separation
 minimum-separation
 1
@@ -292,6 +292,66 @@ minimum-separation
 1
 1
 patches
+HORIZONTAL
+
+SLIDER
+376
+42
+548
+75
+team-A-X
+team-A-X
+1
+100
+56.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+559
+41
+731
+74
+team-A-Y
+team-A-Y
+1
+100
+50.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+374
+91
+546
+124
+team-B-X
+team-B-X
+1
+100
+50.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+558
+91
+730
+124
+team-B-Y
+team-B-Y
+1
+100
+50.0
+1
+1
+NIL
 HORIZONTAL
 
 @#$#@#$#@
