@@ -1,61 +1,110 @@
-;; Turtles vars
-turtles-own [energy]
+turtles-own [
+  flockmates         ;; agentset of nearby turtles
+  nearest-neighbor   ;; closest one of our flockmates
+]
 
-;; Set up proc
 to setup
   clear-all
-  setup-patches
-  setup-turtles
+  create-turtles population
+    [ set color yellow - 2 + random 7  ;; random shades look nice
+      set size 1.5  ;; easier to see
+      setxy random-xcor random-ycor
+      set flockmates no-turtles ]
   reset-ticks
 end
 
 to go
-  move-turtles
-  fight
-  check-death
+  ask turtles [ flock ]
+  ;; the following line is used to make the turtles
+  ;; animate more smoothly.
+  repeat 5 [ ask turtles [ fd 0.2 ] display ]
+  ;; for greater efficiency, at the expense of smooth
+  ;; animation, substitute the following line instead:
+  ;;   ask turtles [ fd 1 ]
   tick
 end
 
-to setup-patches
-  ask patches [ set pcolor green ]
+to flock  ;; turtle procedure
+  find-flockmates
+  if any? flockmates
+    [ find-nearest-neighbor
+      ifelse distance nearest-neighbor < minimum-separation
+        [ separate ]
+        [ align
+          cohere ] ]
 end
 
-;; Creating 2 turtles for now
-to setup-turtles
-  create-turtles 2 [
-    set size random 5
-
-  ]
-
-  ask turtles [setxy random-xcor random-ycor]
+to find-flockmates  ;; turtle procedure
+  set flockmates other turtles in-radius vision
 end
 
-to move-turtles
-  ask turtles [
-    right random 360
-    forward 1
-    set energy energy - 1
-  ]
+to find-nearest-neighbor ;; turtle procedure
+  set nearest-neighbor min-one-of flockmates [distance myself]
 end
 
-to fight
-  ;; If 2 agents are in ea other's vincinity
-  ask turtles [
+;;; SEPARATE
 
-  ]
+to separate  ;; turtle procedure
+  turn-away ([heading] of nearest-neighbor) max-separate-turn
 end
 
-;;idea
-;; if two turltes enter ea other's vicinity (say within 2 unit radius)
-;; then fight occur => randomly determine who will win the fight
-;; QUESTION: how to determine if any agent is at any coordinates???
-;; Does patch have this data?
+;;; ALIGN
 
-to check-death
-  ask turtles [
-    if energy <= 0 [ die ]
-  ]
+to align  ;; turtle procedure
+  turn-towards average-flockmate-heading max-align-turn
 end
+
+to-report average-flockmate-heading  ;; turtle procedure
+  ;; We can't just average the heading variables here.
+  ;; For example, the average of 1 and 359 should be 0,
+  ;; not 180.  So we have to use trigonometry.
+  let x-component sum [dx] of flockmates
+  let y-component sum [dy] of flockmates
+  ifelse x-component = 0 and y-component = 0
+    [ report heading ]
+    [ report atan x-component y-component ]
+end
+
+;;; COHERE
+
+to cohere  ;; turtle procedure
+  turn-towards average-heading-towards-flockmates max-cohere-turn
+end
+
+to-report average-heading-towards-flockmates  ;; turtle procedure
+  ;; "towards myself" gives us the heading from the other turtle
+  ;; to me, but we want the heading from me to the other turtle,
+  ;; so we add 180
+  let x-component mean [sin (towards myself + 180)] of flockmates
+  let y-component mean [cos (towards myself + 180)] of flockmates
+  ifelse x-component = 0 and y-component = 0
+    [ report heading ]
+    [ report atan x-component y-component ]
+end
+
+;;; HELPER PROCEDURES
+
+to turn-towards [new-heading max-turn]  ;; turtle procedure
+  turn-at-most (subtract-headings new-heading heading) max-turn
+end
+
+to turn-away [new-heading max-turn]  ;; turtle procedure
+  turn-at-most (subtract-headings heading new-heading) max-turn
+end
+
+;; turn right by "turn" degrees (or left if "turn" is negative),
+;; but never turn more than "max-turn" degrees
+to turn-at-most [turn max-turn]  ;; turtle procedure
+  ifelse abs turn > max-turn
+    [ ifelse turn > 0
+        [ rt max-turn ]
+        [ lt max-turn ] ]
+    [ rt turn ]
+end
+
+
+; Copyright 1998 Uri Wilensky.
+; See Info tab for full copyright and license.
 @#$#@#$#@
 GRAPHICS-WINDOW
 210
@@ -108,7 +157,7 @@ BUTTON
 70
 Go
 go
-NIL
+T
 1
 T
 OBSERVER
